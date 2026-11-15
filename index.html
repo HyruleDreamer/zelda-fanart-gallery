@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stories Beyond Hyrule — an illustrated Zelda fanfiction archive by HyruleDreamer.">
+  <meta name="color-scheme" content="dark">
+  <title>Stories Beyond Hyrule · HyruleDreamer</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="data/gallery.js" defer></script>
+  <script src="assets/gallery.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#archive">Skip to the archive</a>
+  <header class="header"><a class="brand" href="#"><span aria-hidden="true">✧</span> Stories Beyond Hyrule</a><nav aria-label="Main navigation"><a href="#archive">The archive</a><a href="#about">About</a><a href="guide.html">Add & embed art <span aria-hidden="true">↗</span></a></nav></header>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-art" aria-hidden="true"><div class="halo"></div><div class="moon"></div><div class="mountain back"></div><div class="mountain front"></div><div class="spire"></div><div class="horizon"></div></div>
+      <div class="hero-copy"><p class="eyebrow">An illustrated fanfiction archive</p><h1 id="hero-title">Every legend holds<br>another <em>story.</em></h1><p class="intro">An illustrated archive of alternate destinies, forgotten legends, and stories beyond Hyrule.</p><a class="button gold" href="#archive">Explore the collections <span aria-hidden="true">↓</span></a><p class="signature">Imagined & written by <span>HyruleDreamer</span></p></div>
+      <div class="hero-caption"><span>XI universes. Endless possibilities.</span><span>Stories Beyond Hyrule</span></div>
+    </section>
+    <section id="archive" class="archive" aria-labelledby="archive-title">
+      <div class="section-heading"><div><p class="eyebrow">The collection</p><h2 id="archive-title">Worlds between the pages</h2></div><p>Choose a story.<br>Step into its world.</p></div>
+      <div class="tools"><label class="search"><span aria-hidden="true">⌕</span><span class="sr-only">Search illustrations by title</span><input id="search" aria-label="Search illustrations by title" type="search" placeholder="Search illustrations by title…" autocomplete="off"></label><label class="select-label"><span class="sr-only">Filter by story</span><select id="story-filter" aria-label="Filter by story"><option value="all">All story collections</option></select></label></div>
+      <div class="archive-layout"><aside><p class="eyebrow">Story universes</p><nav id="collections" aria-label="Story collections"></nav><p class="aside-note">A different destiny<br>behind every door.</p></aside><div><div class="results-heading"><h3 id="view-title">All collections</h3><span id="result-count" role="status" aria-live="polite"></span></div><div id="gallery" class="grid"></div><div id="empty" hidden class="empty"><span aria-hidden="true">✧</span><h3>No illustrations found</h3><p>Try a different title or choose another collection.</p><button id="reset" class="button">Clear search & filters</button></div></div></div>
+    </section>
+    <section id="about" class="about"><span class="ornament" aria-hidden="true">✧</span><p class="eyebrow">Beyond the familiar legend</p><h2>For all the worlds<br>that might have been.</h2><p>A home for illustrations from the Zelda fanfiction universes of HyruleDreamer. Each collection follows its own story, its own characters, and its own possibilities.</p><a href="guide.html">A small guide to adding & sharing illustrations <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer><a class="brand" href="#">✧ Stories Beyond Hyrule</a><p>An independent fan archive by HyruleDreamer.<br>The Legend of Zelda belongs to Nintendo. This archive is unofficial.</p><a href="#archive">Return to the archive ↑</a></footer>
+  <dialog id="viewer" aria-labelledby="viewer-title"><button id="close-viewer" class="close" aria-label="Close illustration viewer">×</button><div class="viewer-image"><img id="full-image" alt=""></div><div class="viewer-info"><p id="viewer-story" class="eyebrow"></p><h2 id="viewer-title"></h2><p id="viewer-chapter"></p><p id="viewer-description"></p><a id="original" class="button" target="_blank" rel="noopener">Open original ↗</a><label class="url-label" for="direct-url">Permanent image URL</label><input id="direct-url" readonly><div class="copy-actions"><button id="copy-url" class="button">Copy image URL</button><button id="copy-html" class="button gold">Copy AO3 HTML</button></div><p class="small">Image links work after GitHub Pages is enabled and the image is deployed.</p></div></dialog>
+  <dialog id="copy-fallback" aria-labelledby="copy-title"><h2 id="copy-title">Copy this text</h2><p>Your browser could not copy automatically. Select the text and copy it with your keyboard or touch menu.</p><textarea id="copy-text" readonly rows="5"></textarea><button class="button" id="close-copy">Done</button></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">Enable JavaScript to browse and search the archive. See the <a href="guide.html">image guide</a> for help.</p></noscript>
+</body>
+</html>
