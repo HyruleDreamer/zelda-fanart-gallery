@@ -6,12 +6,15 @@
   const stories = new Map(data.stories.map(s => [s.id, s]));
   // A filename is a single file, never a URL or a path outside its collection.
   const validFile = name => typeof name === 'string' && /^[^/\\\x00-\x1f]+\.(png|jpe?g|webp|gif|avif)$/i.test(name) && name !== '..';
-  const items = data.illustrations.filter(i => !i.example && stories.has(i.story) && validFile(i.filename) && /^[a-z0-9-]+$/.test(i.story));
+  const curated = data.illustrations.filter(i => !i.example);
+  const curatedFiles = new Set(curated.map(i => `${i.story}/${i.filename}`));
+  const automatic = (window.AUTO_ILLUSTRATIONS || []).filter(i => !curatedFiles.has(`${i.story}/${i.filename}`));
+  const items = [...curated, ...automatic].filter(i => stories.has(i.story) && validFile(i.filename) && /^[a-z0-9-]+$/.test(i.story));
   const thumbnailName = item => validFile(item.thumbnail) ? item.thumbnail : `${item.filename}.webp`;
   const path = (item, thumbnail = false) => `${thumbnail ? 'thumbnails' : 'images'}/${encodeURIComponent(item.story)}/${encodeURIComponent(thumbnail ? thumbnailName(item) : item.filename)}`;
   const direct = item => new URL(path(item), data.siteUrl).href;
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const embed = item => `<img src="${escape(direct(item))}" alt="${escape(item.alt || item.description || item.title)}">`;
+  const embed = item => `<img src="${escape(direct(item))}" alt="${escape(item.alt || item.description || item.title)}" style="max-width:100%;height:auto;">`;
   // Exposed for small, dependency-free regression checks.
   window.GalleryHelpers = {validFile, thumbnailName, path, direct, escape, embed};
   let selected = 'all', active = null, lastTrigger = null, toastTimer;

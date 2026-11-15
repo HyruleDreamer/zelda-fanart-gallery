@@ -1,54 +1,70 @@
-name: Generate illustration thumbnails
+name: Prepare gallery and publish when enabled
 
 on:
   push:
     branches: [main, review/stories-beyond-hyrule]
-    paths:
-      - 'images/**'
-      - 'scripts/**'
-      - '.github/workflows/thumbnails.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: thumbnails-${{ github.ref }}
+  group: gallery-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  thumbnails:
-    # Never push previews from arbitrary branches, forks, or pull-request events.
+  build:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/review/stories-beyond-hyrule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write
+      contents: read
+      pages: read
+    outputs:
+      pages_enabled: ${{ steps.pages.outputs.enabled }}
     steps:
-      - name: Check out the latest version of this same branch
+      - name: Check out this exact upload
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.ref_name }}
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
       - name: Install thumbnail tools
         run: python -m pip install -r scripts/requirements.txt
-      - name: Test original preservation and thumbnail sizing
-        run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Test images, gallery, and publishing safeguards
+        run: |
+          python -m unittest discover -s scripts -p 'test_*.py'
+          node scripts/test-site.cjs
       - name: Generate previews
         run: python scripts/generate_thumbnails.py
-      - name: Save thumbnails on this branch only
+      - name: Prepare originals, previews, and automatic gallery entries together
+        run: node scripts/build-site.cjs
+      - name: Save the complete website for this run
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Check whether the owner has enabled Pages
+        id: pages
+        if: github.ref == 'refs/heads/main'
         env:
-          TARGET_BRANCH: ${{ github.ref_name }}
-        run: |
-          git config user.name 'HyruleDreamer'
-          git config user.email '340979993+HyruleDreamer@users.noreply.github.com'
-          git add -- thumbnails/
-          if git diff --cached --quiet; then
-            echo 'All thumbnails are already up to date.'
-            exit 0
-          fi
-          git commit -m 'Generate illustration thumbnails'
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/check-pages.py
+
+  deploy:
+    needs: build
+    # Review branches NEVER deploy. Pages must already be enabled by the owner.
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.pages_enabled == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the complete snapshot, including new thumbnails
+        id: deployment
+        uses: actions/deploy-pages@v4

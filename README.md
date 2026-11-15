@@ -1,19 +1,20 @@
 # Stories Beyond Hyrule
 
-An illustrated Zelda fanfiction archive by **HyruleDreamer**. Plain HTML, CSS, and JavaScript; no build, backend, database, API key, tracking, or external fonts. Hosting is intended for GitHub Pages at `https://HyruleDreamer.github.io/zelda-fanart-gallery/`.
+An illustrated Zelda fanfiction archive by **HyruleDreamer**. Plain HTML, CSS, and JavaScript; no local installation, backend, database, API key, tracking, or external fonts. GitHub prepares the static website automatically. Hosting is intended for GitHub Pages at `https://HyruleDreamer.github.io/zelda-fanart-gallery/`.
 
 ## Preview first
 
 Download the review branch with **Code → Download ZIP**. Extract it, then double-click **index.html**. The site works from your computer, including filtering and search. Copy buttons show a manual copy box if your browser blocks clipboard access. No site has been published automatically.
 
-## Add your first illustration
+## Add an illustration — just upload your original
 
-1. On GitHub, open `images/silent-world/` (or your story’s folder). Choose **Add file → Upload files**. Upload your original, such as `moonlit-reunion.png`, then save.
-2. Click the repository’s **Actions** tab. Wait for **Generate illustration thumbnails** to show a green check. GitHub automatically saves a smaller WebP copy in `thumbnails/silent-world/moonlit-reunion.png.webp`. You do not need to resize or upload a second image.
-3. Open **data/gallery.js**, click the pencil, and replace the hidden example’s details with your own. Remove `example: true` after uploading the original. Save your changes.
-4. After publication, wait for GitHub Pages to deploy the change. Open the correct story in the gallery.
+1. On GitHub, choose the story folder under **images/**, such as **images/silent-world/**. During review, use **review/stories-beyond-hyrule**. After the site is approved and published, use **main**.
+2. Choose **Add file → Upload files**, upload your original, and save. Use a descriptive filename, for example **link-and-zelda-under-the-moon.png**.
+3. That is enough. Once publishing is enabled, GitHub prepares the thumbnail and a gallery entry automatically, then publishes everything together. Allow a few minutes, then refresh your gallery.
 
-Example entry (instructional only; these files are not included):
+You do not need to resize anything, upload thumbnails, open the Actions tab, edit a data file for every upload, or start a second deployment. Uploading to the review branch never publishes anything.
+
+The automatic title comes from the filename: `link-and-zelda-under-the-moon.png` becomes “link and zelda under the moon.” The automatic alt text combines that descriptive title with the story name. Choose filenames that describe what the illustration actually shows. For a richer description, chapter number, or custom title, optionally add an entry to **data/gallery.js**:
 
 ```js
 {
@@ -22,44 +23,45 @@ Example entry (instructional only; these files are not included):
   title: "Moonlit reunion",
   chapter: 1,
   description: "A quiet reunion beneath the moon.",
-  alt: "Describe the people, setting, and action actually shown.",
-  filename: "moonlit-reunion.png"
+  alt: "Link and Zelda stand beneath a full moon beside a flowering tree.",
+  filename: "link-and-zelda-under-the-moon.png"
 }
 ```
 
-Separate entries with commas. Use double quotes around text; write an internal double quote as `\"`. Chapter and description are optional. You normally omit `thumbnail`: the gallery finds the generated preview automatically. Existing custom `thumbnail` filenames still work if you upload those custom files yourself; remove the field to use automatic previews. The story id must match the stories list. Filenames are case-sensitive. Lowercase names with hyphens are easiest. PNG, JPG/JPEG, WebP, GIF, and AVIF are supported. Browser uploads must be under 25 MiB per file; smaller originals are better for readers. Keep your originals backed up separately.
+This sample is instructional; no artwork is supplied. A custom entry takes precedence over the automatic entry for the same story and filename, so you will not get duplicates. Separate entries with commas. Chapter and description are optional. The hidden example remains hidden until you replace its details and remove `example: true`. Custom entries also let you control alt text precisely.
 
-## Automatic thumbnails — no image editing required
+PNG, JPG/JPEG, WebP, GIF, and AVIF originals are supported. Spell filenames exactly, including capital letters. Files uploaded through GitHub’s browser interface must be below 25 MiB. Smaller originals are easier for readers to open. Keep your original files backed up separately.
 
-A **GitHub Actions workflow** is an instruction that GitHub runs for you. This one creates image previews, not a website deployment. It uses GitHub’s built-in temporary token; you do not need an API key, paid image service, or Python on your computer.
+## How automatic previews work
 
-- Upload originals to `images/<story-id>/` on **review/stories-beyond-hyrule** while reviewing. The workflow runs on that branch, and later on `main` only if you approve a merge.
-- Wait for the green check in **Actions → Generate illustration thumbnails**, then add or update the illustration in `data/gallery.js`. That is the only data file you edit.
-- Each generated thumbnail is up to **500 pixels wide**, keeps the complete artwork without cropping, and is never enlarged if the original is smaller. Portraits may be taller than 500 pixels. EXIF orientation is respected. Transparent artwork stays transparent. Animated GIF/WebP previews use their first frame; opening the original retains the original animation.
-- The complete original filename is retained before the extra `.webp`: `scene.png` becomes `scene.png.webp`, while `scene.jpg` becomes `scene.jpg.webp`. This prevents collisions. Your original files are never resized, overwritten, renamed, or stripped of metadata.
-- Generated previews have unnecessary metadata removed. If the encoder lacks WebP support, it writes PNG instead (`scene.png.png`); the gallery tries that fallback automatically. Current browsers support WebP; this is an encoder fallback, not legacy-browser detection.
-- The gallery lazy-loads only previews. Clicking opens the original; **Copy Image URL** and **Copy AO3 HTML** always point to `images/`, never to `thumbnails/`.
-- Replacing an original with a new file of the same name refreshes its thumbnail. Repeat runs do not create commits when previews are unchanged. Old previews are retained when originals are removed, so this automation never deletes your files.
+The workflow creates a separate thumbnail up to **500 pixels wide**, without cropping, changing proportions, or enlarging small artwork. It respects rotation and transparency. Animated GIF/WebP previews use the first frame; opening the original retains its animation. Originals remain byte-for-byte unchanged.
 
-If GitHub asks to enable Actions for the repository, do so when you are ready to use automatic previews. If a run says it cannot push, check **Settings → Actions → General → Workflow permissions → Read and write permissions**. Repository rules may still prevent automated commits; the workflow will show a failed run rather than bypass those rules. It saves only thumbnail changes to the same branch, using HyruleDreamer and the confirmed GitHub noreply email for both commit identities. It never merges branches or enables Pages.
+The preview for `images/silent-world/scene.png` is `thumbnails/silent-world/scene.png.webp`. Keeping the original extension avoids collisions with `scene.jpg`. If the encoder lacks WebP support it creates a PNG fallback. The gallery loads previews lazily; opening a card and both copy buttons always use the original image.
 
-**If a run fails:** open the red run in Actions and read the failed step. Check that the uploaded file is a real supported image. After fixing it, upload it again or choose **Re-run all jobs** on the failed run. A placeholder remains clickable so you can still open the original. To regenerate everything manually, use **Actions → Generate illustration thumbnails → Run workflow**, selecting the branch you want. GitHub shows this manual button only once the workflow exists on the default branch; before that, uploading a new original or re-running an existing run works on the review branch.
+**Thumbnails and automatic entries are generated in the website package, not committed back to your branch.** This removes the extra commit/deployment problem. The package contains the originals, thumbnails, and current metadata from one upload. No personal token, external image host, or additional service is needed. The workflow does not create commits or change the source branch.
 
-**After you eventually publish:** wait for thumbnail generation to finish *before* saving your metadata edit. GitHub’s built-in token does not trigger another Pages build when the workflow saves thumbnails. Your subsequent metadata edit triggers the normal Pages build with the previews included. If you replaced artwork without editing metadata, make a small meaningful description update after the green check, or re-run the latest Pages deployment from Actions. No deployment is enabled by this feature. [GitHub explains token-triggered workflow behavior here](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow).
+If you download the source ZIP before publishing, automatic entries and previews are not generated in that source download. Existing manually entered illustrations can still open. The full generated website is available in a successful workflow run’s **github-pages** artifact (a download package); extracting it and then its `artifact.tar` lets you preview the exact prepared site. This is optional and not part of normal uploads.
 
-Optional developer commands (not needed for normal uploads): `python -m pip install -r scripts/requirements.txt`, then `python scripts/generate_thumbnails.py`. Tests: `python -m unittest discover -s scripts -p 'test_*.py'`.
+If you previously supplied a custom `thumbnail` name, remove it to use automatic previews, or keep uploading that custom thumbnail yourself. Missing previews show a clickable placeholder rather than downloading the large original into the grid.
 
-The supplied example has `example: true`, so it never requests nonexistent images. Initially all eleven stories show clearly labeled CSS placeholders, not artwork. A title search searches actual illustrations only. Selecting a collection never shows art from other stories. The lightbox opens originals only on request.
+If an upload does not appear after a few minutes, refresh the site and check that it was uploaded to the correct story folder on main. Check the filename and file type. A failed image prevents deployment of an incomplete package; the previous published site remains available. The optional diagnostic view is **Actions → Prepare gallery and publish when enabled**. You can ask for help with a failed run; normal uploads do not require interacting with it.
 
-## Publish when you are ready
+Optional developer commands: install `scripts/requirements.txt`, run `python scripts/generate_thumbnails.py`, then `node scripts/build-site.cjs`. The complete website appears in `_site/`. Tests: `python -m unittest discover -s scripts -p 'test_*.py'` and `node scripts/test-site.cjs`.
 
-1. Review the proposed changes. Approve and merge the review branch into **main**.
-2. Open **Settings → Pages** in the repository.
-3. Under Build and deployment, select **Deploy from a branch**.
-4. Select **main** and **/ (root)**, then **Save**.
-5. Wait for GitHub’s successful deployment message, then visit the site address above.
+## Publish when you are ready — one-time setup
 
-No Pages workflow or automatic publishing configuration is included. All site links use relative paths, so the `/zelda-fanart-gallery/` project path works. `.nojekyll` tells Pages to serve the static files as supplied.
+Nothing is published during review. The review branch only prepares and tests a website package. The workflow never enables Pages itself.
+
+After you approve merging into main and are ready to publish:
+
+1. Merge the approved pull request into **main**.
+2. Open **Settings → Pages** and choose **GitHub Actions** as the publishing source. Do not choose “Deploy from a branch.” This one-time setting gives the prepared workflow permission to publish the complete package.
+3. Upload your first illustration to its story folder on main, or save a small description change in data/gallery.js. That normal change starts the first deployment. No manual Actions run is needed.
+4. Wait a few minutes, then visit **https://HyruleDreamer.github.io/zelda-fanart-gallery/**.
+
+From then on, uploading or replacing an illustration, or saving metadata changes, automatically prepares and publishes the whole website in one run. Upload and metadata edits may happen in either order; each change rebuilds the current complete site. Filenames, folders, and asset links work under the project path.
+
+For a previously configured site, switch the Pages source to **GitHub Actions** once. The deployment job runs only on main and only when the Pages API confirms that the owner already enabled this source. Disabled Pages and review branches do not deploy. Missing permissions or image-processing errors fail closed; they do not enable hosting or publish an incomplete site.
 
 ## Embed in AO3
 
@@ -69,7 +71,7 @@ No Pages workflow or automatic publishing configuration is included. All site li
 
 The **Copy image URL** button gives just the original image address. Both buttons always use the final Pages address from `siteUrl` in `data/gallery.js`, never your local preview, a GitHub blob link, or a temporary link. HTML attributes are escaped. The image URLs only work after Pages is enabled and the images are deployed. Test the direct URL in your browser before embedding.
 
-For responsive AO3 images you can optionally add `style="max-width:100%;height:auto;"` to the image element. Verify the result using AO3’s chapter preview.
+The copied HTML already includes `style="max-width:100%;height:auto;"`, so images shrink to fit narrow screens while keeping their proportions. Meaningful alt text and the original image URL are preserved. Verify the result using AO3’s chapter preview.
 
 ## Keep old AO3 links working
 
@@ -89,12 +91,13 @@ assets/gallery.js          Gallery behavior and copy buttons
 data/gallery.js            THE ONE FILE to edit for stories and image details
 images/<story-id>/         Original images; .gitkeep preserves empty folders
 thumbnails/<story-id>/     Small previews; .gitkeep preserves empty folders
-scripts/                   Thumbnail generator, dependency version, and tests
-.github/workflows/         Automatic thumbnail generation; no publishing job
+data/automatic.js          Empty source placeholder; upload entries generated in the website package
+scripts/                   Thumbnail generation, site packaging, safeguards, and tests
+.github/workflows/         Prepare all assets together; publish main only after Pages is enabled
 .nojekyll                  Static GitHub Pages support
 ```
 
-The website cannot save uploads: a static site has no authenticated GitHub access or backend. Use GitHub’s actual upload interface. There is no pretend upload button.
+The website cannot save uploads: a static site has no authenticated GitHub access or backend. Use GitHub’s actual upload interface. Uploaded images automatically receive gallery entries during packaging. There is no pretend upload button.
 
 ## Accessibility and privacy
 
@@ -105,7 +108,7 @@ Public identity: **HyruleDreamer** only. Keep personal contact details out of me
 ## Troubleshooting
 
 - **Art is missing:** match the filename’s capital letters, story id, and extension; upload the original; remove `example: true`; check commas in the data file.
-- **Preview is missing:** wait for the green thumbnail workflow check. Remove an old custom `thumbnail` field to use automatic names. The original is intentionally not downloaded to replace a missing thumbnail.
+- **Preview is missing:** allow a few minutes for the automatic website update. Remove an old custom `thumbnail` field to use automatic names. The original is intentionally not downloaded to replace a missing thumbnail.
 - **AO3 image does not load:** enable Pages, wait for deployment, and test the copied direct link. Do not paste a `github.com/.../blob/...` link.
 - **Old image still appears:** wait for deployment and refresh your browser. Keep the filename unchanged to preserve old embeds.
 - **Copy is blocked:** copy the text from the manual copy dialog.
