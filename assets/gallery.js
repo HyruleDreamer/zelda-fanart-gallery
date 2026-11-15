@@ -7,12 +7,13 @@
   // A filename is a single file, never a URL or a path outside its collection.
   const validFile = name => typeof name === 'string' && /^[^/\\\x00-\x1f]+\.(png|jpe?g|webp|gif|avif)$/i.test(name) && name !== '..';
   const items = data.illustrations.filter(i => !i.example && stories.has(i.story) && validFile(i.filename) && /^[a-z0-9-]+$/.test(i.story));
-  const path = (item, thumbnail = false) => `${thumbnail ? 'thumbnails' : 'images'}/${encodeURIComponent(item.story)}/${encodeURIComponent(thumbnail ? item.thumbnail : item.filename)}`;
+  const thumbnailName = item => validFile(item.thumbnail) ? item.thumbnail : `${item.filename}.webp`;
+  const path = (item, thumbnail = false) => `${thumbnail ? 'thumbnails' : 'images'}/${encodeURIComponent(item.story)}/${encodeURIComponent(thumbnail ? thumbnailName(item) : item.filename)}`;
   const direct = item => new URL(path(item), data.siteUrl).href;
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const embed = item => `<img src="${escape(direct(item))}" alt="${escape(item.alt || item.description || item.title)}">`;
   // Exposed for small, dependency-free regression checks.
-  window.GalleryHelpers = {validFile, path, direct, escape, embed};
+  window.GalleryHelpers = {validFile, thumbnailName, path, direct, escape, embed};
   let selected = 'all', active = null, lastTrigger = null, toastTimer;
   const element = (tag, className, text) => {const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node;};
   const count = id => items.filter(i => i.story === id).length;
@@ -45,11 +46,19 @@
     const card = element('article','card');
     const button = element('button','card-trigger'); button.type='button'; button.setAttribute('aria-label',`View ${item.title}`);
     const art = element('div','art');
-    if(validFile(item.thumbnail)) {
+    {
       const img = element('img'); img.src = path(item,true); img.alt = item.alt || item.description || item.title; img.loading='lazy'; img.decoding='async';
       img.addEventListener('load',()=>art.classList.add('loaded'));
-      img.addEventListener('error',()=>{img.remove(); art.append(element('span','soon','Preview unavailable'));}); art.append(img);
-    } else art.append(element('span','soon','Open full illustration'));
+      let triedPng = false;
+      img.addEventListener('error',()=>{
+        if (!validFile(item.thumbnail) && !triedPng) {
+          triedPng = true;
+          img.src = `thumbnails/${encodeURIComponent(item.story)}/${encodeURIComponent(item.filename + '.png')}`;
+          return;
+        }
+        img.remove(); art.append(element('span','soon','Preview is being prepared · Open original'));
+      }); art.append(img);
+    }
     const meta = element('div','card-meta'); meta.append(element('span','',stories.get(item.story).title));
     if(item.chapter !== undefined && item.chapter !== '') meta.append(element('span','',`Ch. ${item.chapter}`));
     button.append(art,meta,element('h4','',item.title),element('p','',item.description || 'View illustration'));

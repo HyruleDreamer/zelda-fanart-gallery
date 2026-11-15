@@ -1,7 +1,7 @@
 /* EDIT THIS FILE to manage your archive. No installation or build needed.
    Each story id must be unique. Image filenames are case-sensitive.
    Keep full images in images/<story-id>/ and small previews in thumbnails/<story-id>/.
-   A thumbnail (ideally 600–900 pixels wide) avoids downloading originals in the grid. */
+   GitHub Actions generates 500-pixel previews automatically. No thumbnail entry needed. */
 window.GALLERY_DATA = {
   // Always use the public Pages address, even while previewing on your computer.
   siteUrl: "https://HyruleDreamer.github.io/zelda-fanart-gallery/",
@@ -28,8 +28,7 @@ window.GALLERY_DATA = {
       chapter: 1,
       description: "Replace this with a description of your illustration.",
       alt: "Describe the characters, setting, and action shown in your illustration.",
-      filename: "my-first-illustration.png",
-      thumbnail: "my-first-illustration.webp"
+      filename: "my-first-illustration.png"
     }
   ]
 };
