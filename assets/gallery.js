@@ -33,7 +33,7 @@
   function placeholder(story, index) {
     const card = element('article','card collection-card');
     const button = element('button','card-trigger'); button.type='button'; button.setAttribute('aria-label',`Browse ${story.title}`);
-    const art = element('div','art'); art.style.setProperty('--hue', String(170 + index * 17)); art.setAttribute('aria-hidden','true');
+    const art = element('div','art'); art.style.setProperty('--hue', String(340 + index * 3)); art.setAttribute('aria-hidden','true');
     const total = count(story.id);
     art.append(element('span','sigil',symbols[index % symbols.length]),element('span','soon',total ? 'Explore the collection' : 'Awaiting illustrations'));
     const meta = element('div','card-meta'); meta.append(element('span','',`Universe ${String(index+1).padStart(2,'0')}`),element('span','',`${total} illustration${total===1?'':'s'}`));
