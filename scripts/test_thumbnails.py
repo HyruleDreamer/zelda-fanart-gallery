@@ -1,5 +1,7 @@
 """Temporary test artwork is never added to the gallery."""
 import hashlib
+import io
+from contextlib import redirect_stdout
 from pathlib import Path
 import tempfile
 import unittest
@@ -9,6 +11,28 @@ from generate_thumbnails import generate
 
 
 class ThumbnailTests(unittest.TestCase):
+    def test_polish_filenames_preserve_originals_and_generate_real_webp(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            folder = root / 'images' / 'courtship-first-then-invasion-taxes-later'
+            folder.mkdir(parents=True)
+            names = ['Fresk Światła i Cienia.png',
+                     'Księżycowy pojedynek w starożytnym fresku.png',
+                     'Starożytna ceremonia ślubna Hyrule.png']
+            for name in names:
+                Image.new('RGB', (1200, 800), 'blue').save(folder / name)
+            hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.iterdir()}
+            # Even an ASCII-only Windows console must not turn successful writes into errors.
+            with io.TextIOWrapper(io.BytesIO(), encoding='ascii') as console:
+                with redirect_stdout(console):
+                    self.assertEqual(generate(root), 0)
+            for name in names:
+                preview = root / 'thumbnails' / folder.name / (name + '.webp')
+                with Image.open(preview) as image:
+                    self.assertEqual(image.size, (500, 333))
+                    self.assertEqual(image.format, 'WEBP')
+            self.assertEqual(hashes, {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.iterdir()})
+
     def test_dimensions_preservation_collisions_and_idempotence(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

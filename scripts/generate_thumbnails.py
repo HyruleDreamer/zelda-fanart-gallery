@@ -41,10 +41,12 @@ def generate(root: Path) -> int:
             if not destination.exists() or destination.read_bytes() != content:
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes(content)
-                print(f'Generated {destination.relative_to(root)} ({width} x {height})')
+                # Escape only the log text for consoles without Polish-character support.
+                # Filesystem paths and gallery filenames remain exactly as uploaded.
+                print(f'Generated {str(destination.relative_to(root))!a} ({width} x {height})')
         except Exception as error:
             failures += 1
-            print(f'Could not process {source.relative_to(root)}: {error}', file=sys.stderr)
+            print(f'Could not process {str(source.relative_to(root))!a}: {error!a}', file=sys.stderr)
     return failures
 
 
